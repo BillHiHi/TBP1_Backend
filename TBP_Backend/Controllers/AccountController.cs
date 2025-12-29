@@ -10,7 +10,7 @@ using TBP_Backend.Models;
 namespace TBP_Backend.Api
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/account")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -27,23 +27,24 @@ namespace TBP_Backend.Api
             _config = config;
         }
 
-        // ==========================
-        // REGISTER
-        // ==========================
+        // =============================================
+        // POST: api/account/register
+        // =============================================
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterRequest model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            if (await _userManager.FindByEmailAsync(model.Email) != null)
+                return BadRequest(new { message = "Email đã tồn tại" });
 
             var user = new ApplicationUser
             {
-                UserName = model.Email,
                 Email = model.Email,
-                PhoneNumber = model.PhoneNumber,
+                UserName = model.Email,
                 FirstName = model.FirstName,
-                LastName = model.LastName
+                LastName = model.LastName,
+                PhoneNumber = model.PhoneNumber,
+                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -51,7 +52,7 @@ namespace TBP_Backend.Api
             if (!result.Succeeded)
                 return BadRequest(result.Errors.Select(e => e.Description));
 
-            // Gán role mặc định
+            // gán role User mặc định
             if (!await _roleManager.RoleExistsAsync("User"))
                 await _roleManager.CreateAsync(new IdentityRole("User"));
 
@@ -60,23 +61,19 @@ namespace TBP_Backend.Api
             return Ok(new { message = "Đăng ký thành công" });
         }
 
-        // ==========================
-        // LOGIN
-        // ==========================
+        // =============================================
+        // POST: api/account/login
+        // =============================================
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login(LoginRequest model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
             var user = await _userManager.FindByEmailAsync(model.Email);
-
             if (user == null)
-                return Unauthorized("Sai email hoặc mật khẩu");
+                return Unauthorized(new { message = "Sai email hoặc mật khẩu" });
 
             if (!await _userManager.CheckPasswordAsync(user, model.Password))
-                return Unauthorized("Sai email hoặc mật khẩu");
+                return Unauthorized(new { message = "Sai email hoặc mật khẩu" });
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = GenerateJwtToken(user, roles);
@@ -96,15 +93,14 @@ namespace TBP_Backend.Api
             });
         }
 
-        // ==========================
-        // GET CURRENT USER
-        // ==========================
+        // =============================================
+        // GET: api/account/me
+        // =============================================
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> Me()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
             var user = await _userManager.FindByIdAsync(userId!);
 
             if (user == null)
@@ -123,9 +119,9 @@ namespace TBP_Backend.Api
             });
         }
 
-        // ==========================
+        // =============================================
         // JWT HELPER
-        // ==========================
+        // =============================================
         private string GenerateJwtToken(ApplicationUser user, IList<string> roles)
         {
             var key = new SymmetricSecurityKey(
@@ -139,19 +135,35 @@ namespace TBP_Backend.Api
             };
 
             foreach (var role in roles)
-            {
                 claims.Add(new Claim(ClaimTypes.Role, role));
-            }
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: null,
                 claims: claims,
-                expires: DateTime.Now.AddHours(6),
+                expires: DateTime.UtcNow.AddHours(6),
                 signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+    }
+
+    // =============================================
+    // DTOs
+    // =============================================
+    public class RegisterRequest
+    {
+        public string FirstName { get; set; } = null!;
+        public string LastName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
+        public string Password { get; set; } = null!;
+    }
+
+    public class LoginRequest
+    {
+        public string Email { get; set; } = null!;
+        public string Password { get; set; } = null!;
     }
 }

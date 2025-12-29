@@ -39,17 +39,19 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.RequireHttpsMetadata = false;
+
+    options.SaveToken = true;
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = false,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
+        ValidateIssuer = true,                 // kiểm tra Issuer
+        ValidateAudience = false,              // không cần Audience
+        ValidateLifetime = true,               // bắt buộc còn hạn
+        ValidateIssuerSigningKey = true,       // kiểm tra Key
+
         ValidIssuer = jwtIssuer,
-        IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(jwtKey)
-        ),
-        ClockSkew = TimeSpan.Zero
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 
