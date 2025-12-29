@@ -11,18 +11,23 @@ namespace TBP_Backend.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-            name: "FullName",
-            table: "AspNetUsers",
-            type: "nvarchar(max)",
-            nullable: true);
+                name: "FirstName",
+                table: "AspNetUsers",
+                type: "nvarchar(100)",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "LastName",
+                table: "AspNetUsers",
+                type: "nvarchar(100)",
+                nullable: true);
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-            name: "FullName",
-            table: "AspNetUsers");
+            migrationBuilder.DropColumn("FirstName", "AspNetUsers");
+            migrationBuilder.DropColumn("LastName", "AspNetUsers");
         }
+
     }
 }
