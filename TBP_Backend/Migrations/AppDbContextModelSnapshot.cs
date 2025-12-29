@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using TBP_Backend.Data;
 
 #nullable disable
 
@@ -240,7 +239,7 @@ namespace TBP_Backend.Migrations
 
                     b.HasKey("CartId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("TBP_Backend.Models.CartItem", b =>
@@ -269,7 +268,7 @@ namespace TBP_Backend.Migrations
 
                     b.HasIndex("ProductVariantVariantId");
 
-                    b.ToTable("CartItem");
+                    b.ToTable("CartItem", (string)null);
                 });
 
             modelBuilder.Entity("TBP_Backend.Models.Category", b =>
@@ -287,7 +286,7 @@ namespace TBP_Backend.Migrations
 
                     b.HasKey("CategoryId");
 
-                    b.ToTable("Category");
+                    b.ToTable("Category", (string)null);
                 });
 
             modelBuilder.Entity("TBP_Backend.Models.Order", b =>
@@ -315,7 +314,7 @@ namespace TBP_Backend.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("TBP_Backend.Models.Product", b =>
@@ -347,7 +346,7 @@ namespace TBP_Backend.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
                 });
 
             modelBuilder.Entity("TBP_Backend.Models.ProductImg", b =>
@@ -370,7 +369,7 @@ namespace TBP_Backend.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImg");
+                    b.ToTable("ProductImg", (string)null);
                 });
 
             modelBuilder.Entity("TBP_Backend.Models.ProductVariant", b =>
@@ -402,7 +401,7 @@ namespace TBP_Backend.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductVariant");
+                    b.ToTable("ProductVariant", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

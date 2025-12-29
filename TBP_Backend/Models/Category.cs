@@ -10,5 +10,6 @@ namespace TBP_Backend.Models
         [Required]
         [MaxLength(50)]
         public string CategoryName { get; set; }
+
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TBP_Backend.Data;
 
 namespace TBP_Backend.Api
 {
