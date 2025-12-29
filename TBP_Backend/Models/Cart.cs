@@ -10,5 +10,8 @@ namespace TBP_Backend.Models
         public string UserId { get; set; } 
 
         public DateTime CreatedAt { get; set; }
+
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
     }
 }

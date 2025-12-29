@@ -14,8 +14,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ProductImg> ProductImg { get; set; }
     public DbSet<ProductVariant> ProductVariant { get; set; }
     public DbSet<Cart> Carts { get; set; }
-    public DbSet<CartItem> CartItem { get; set; }
+    public DbSet<CartItem> CartItems { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItems> OrderItems { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
