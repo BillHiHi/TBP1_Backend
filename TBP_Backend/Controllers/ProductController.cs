@@ -19,8 +19,25 @@ namespace TBP_Backend.Api
         public async Task<IActionResult> GetAll()
         {
             var products = await _context.Product
-                .Include(p => p.ProductImg)
-                .Include(p => p.ProductVariant)
+                .Select(p => new
+                {
+                    p.ProductId,
+                    p.ProductName,
+                    p.Price,
+                    p.CategoryId,
+
+                    Images = p.ProductImg.Select(img => new
+                    {
+                        img.ImageId,
+                        img.ImageUrl
+                    }),
+
+                    Variants = p.ProductVariant.Select(v => new
+                    {
+                        v.VariantId,
+                        v.Price
+                    })
+                })
                 .ToListAsync();
 
             return Ok(products);
@@ -32,12 +49,19 @@ namespace TBP_Backend.Api
         {
             var products = await _context.Product
                 .Where(p => p.CategoryId == categoryId)
-                .Include(p => p.ProductImg)
-                .Include(p => p.ProductVariant)
+                .Select(p => new
+                {
+                    p.ProductId,
+                    p.ProductName,
+                    p.Price,
+
+                    Images = p.ProductImg.Select(i => i.ImageUrl)
+                })
                 .ToListAsync();
 
             return Ok(products);
         }
+
 
         // GET: api/product/search?keyword=abc
         [HttpGet("search")]
@@ -45,10 +69,18 @@ namespace TBP_Backend.Api
         {
             var products = await _context.Product
                 .Where(p => p.ProductName.Contains(keyword))
-                .Include(p => p.ProductImg)
+                .Select(p => new
+                {
+                    p.ProductId,
+                    p.ProductName,
+                    p.Price,
+
+                    Images = p.ProductImg.Select(i => i.ImageUrl)
+                })
                 .ToListAsync();
 
             return Ok(products);
         }
+
     }
 }
